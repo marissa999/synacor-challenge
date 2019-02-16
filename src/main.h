@@ -5,6 +5,9 @@
 #ifndef SYNACOR_MAIN_H
 #define SYNACOR_MAIN_H
 
-    int main (int argc, char *argv[]);
+#include "memory.h"
+#include "opcodes.h"
+
+int main (const int argc, const char *argv[]);
 
 #endif // SYNACOR_MAIN_H

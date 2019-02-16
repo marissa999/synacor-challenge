@@ -5,10 +5,10 @@
 #ifndef SYNACOR_OPCODES_H
 #define SYNACOR_OPCODES_H
 
+#include <unitypes.h>
+#include "memory.h"
+#include <vector>
 
-class opcodes {
-
-};
-
+void opcode_processOpCode(uint16_t& pos, std::vector<uint16_t>& codes, Memory& memory);
 
 #endif //SYNACOR_OPCODES_H
