@@ -4,8 +4,8 @@
 !CMakeLists.txt
 !README.md
 
-!/deps/*
+!/deps/
 !/src/
-!/build/*
-!/bin/*
+!/build/
+!/bin/
 /bin/game
