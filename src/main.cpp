@@ -1,5 +1,9 @@
+//
+// Created by littles on 16.02.19.
+//
+
+#include "main.h"
 #include <iostream>
-#include "Main.h"
 
 int main (int argc, char *argv[])
 {
