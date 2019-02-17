@@ -7,21 +7,26 @@
 #include <fstream>
 #include <vector>
 
-void initCodes(std::vector<uint16_t>& codes){
+std::vector<unsigned short int> initCodes(){
+    std::vector<unsigned short int> codes;
     // init buffer
-    char *buffer;
+    char* buffer;
     // init length
     int length;
     // init input file stream
     std::ifstream ifs ("challenge.bin", std::ifstream::binary);
     // if we were able to init ifs
     if (ifs) {
+        // get length of file
         ifs.seekg(0, ifs.end);
         length = ifs.tellg();
         ifs.seekg(0, ifs.beg);
 
+        // make char buffer
         buffer = new char[length];
+        // read every byte
         ifs.read(buffer, length);
+        // close ifs
         ifs.close();
     } else {
         std::cout << "Couldn't open file. Stop!" << std::endl;
@@ -29,19 +34,20 @@ void initCodes(std::vector<uint16_t>& codes){
     }
     // make 8 bits to 16 bit
     for(int i = 0; i < length; i += 2){
-        codes.push_back((static_cast<uint16_t>(buffer[i + 1] << 8)) | (static_cast<uint16_t>(buffer[i])));
+        codes.push_back((static_cast<unsigned short int>(buffer[i] & 0xff)) | (static_cast<unsigned short int>(buffer[i + 1] << 8)));
     }
+    return codes;
 }
 
-int main (const int argc, const char *argv[])
-{
+int main (const int argc, const char *argv[]){
     // init memory
     Memory memory;
-    std::vector<uint16_t> codes;
-    uint16_t pos = 0;
+    unsigned short int pos = 0;
 
-    initCodes(codes);
+    // read opcodes and operands
+    const std::vector<unsigned short int> codes = initCodes();
 
+    // exectue while opcode isnt 0
     while(codes[pos] != 0){
         opcode_processOpCode(pos, codes, memory);
     }

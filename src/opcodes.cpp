@@ -7,143 +7,147 @@
 #include <iostream>
 
 // 0 - halt: stop execution and terminate the program
-void opcode_halt(uint16_t& pos, Memory& memory){
+void opcode_halt(unsigned short int& pos, Memory& memory){
     // nothing to implement
 }
 
 // 1 - set: set register <a> to the value of <b>
-void opcode_set(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
+void opcode_set(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
+    memory.writeToRegister(a, b);
+
+    pos += 3;
+}
+
+// 2 - push: push <a> onto the stack
+void opcode_push(unsigned short int& pos, Memory& memory, unsigned short int a){
 
     pos += 2;
 }
 
-// 2 - push: push <a> onto the stack
-void opcode_push(uint16_t& pos, Memory& memory, uint16_t a){
-
-    pos += 1;
-}
-
 // 3 - pop: remove the top element from the stack and write it into <a>; empty stack = error
-void opcode_pop(uint16_t& pos, Memory& memory, uint16_t a){
+void opcode_pop(unsigned short int& pos, Memory& memory, unsigned short int a){
 
-    pos += 1;
+    pos += 2;
 }
 
 // 4 -  eq: set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise
-void opcode_eq(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
-
+void opcode_eq(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, b == c ? 1 : 0);
     pos += 4;
 }
 
 // 5 - gt: set <a> to 1 if <b> is greater than <c>; set it to 0 otherwise
-void opcode_gt(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
+void opcode_gt(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, b > c ? 1 : 0);
 
     pos += 4;
 }
 
 // 6 - jmp: jump to <a>
-void opcode_jmp(uint16_t& pos, Memory& memory, uint16_t a){
+void opcode_jmp(unsigned short int& pos, Memory& memory, unsigned short int a){
     pos = a;
 }
 
 // 7: jt - if <a> is nonzero, jump to <b>
-void opcode_jt(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
-
-    pos += 3;
+void opcode_jt(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
+    pos = (a != 0 ? b : pos + 3);
 }
 
 // 8: jf - if <a> is zero, jump to <b>
-void opcode_jf(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
-
-    pos += 3;
+void opcode_jf(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
+    pos = (a == 0 ? b : pos + 3);
 }
 
-// 9: add - assign into <a> the sum of <b> and <c> (uint16_t& pos, Memory& memory, modulo 32768)
-void opcode_add(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
-
+void opcode_add(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, (b + c) % 32768);
     pos += 4;
 }
 
-// 10: mult - store into <a> the product of <b> and <c> (uint16_t& pos, Memory& memory, modulo 32768)
-void opcode_mult(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
+// 10: mult - store into <a> the product of <b> and <c> (unsigned short int& pos, Memory& memory, modulo 32768)
+void opcode_mult(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, (b * c) % 32768);
 
     pos += 4;
 }
 
 // 11: mod - store into <a> the remainder of <b> divided by <c>
-void opcode_mod(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
+void opcode_mod(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, b % c);
 
     pos += 4;
 }
 
 // 12: and - stores into <a> the bitwise and of <b> and <c>
-void opcode_and(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
-
+void opcode_and(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, b & c);
+    
     pos += 4;
 }
 
 // 13: or - stores into <a> the bitwise or of <b> and <c>
-void opcode_or(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b, uint16_t c){
+void opcode_or(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b, unsigned short int c){
+    memory.writeToRegister(a, b ^ c);
 
     pos += 4;
 }
 
 // 14: not - stores 15-bit bitwise inverse of <b> in <a>
-void opcode_not(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
+void opcode_not(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
+    memory.writeToRegister(a, ~b & 0x8FFF);
 
     pos += 3;
 }
 
 // 15: rmem - read memory at address <b> and write it to <a>
-void opcode_rmem(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
+void opcode_rmem(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
 
     pos += 3;
 }
 
 // 16: wmem - write the value from <b> into memory at address <a>
-void opcode_wmem(uint16_t& pos, Memory& memory, uint16_t a, uint16_t b){
+void opcode_wmem(unsigned short int& pos, Memory& memory, unsigned short int a, unsigned short int b){
 
     pos += 3;
 }
 
 // 17: call - write the address of the next instruction to the stack and jump to <a>
-void opcode_call(uint16_t& pos, Memory& memory, uint16_t a){
+void opcode_call(unsigned short int& pos, Memory& memory, unsigned short int a){
 
     pos += 2;
 }
 
 // 18: ret - remove the top element from the stack and jump to it; empty stack = halt
-void opcode_ret(uint16_t& pos, Memory& memory){
+void opcode_ret(unsigned short int& pos, Memory& memory){
 
+    pos += 1;
 }
 
 // 19: out - write the character represented by ascii code <a> to the terminal
-void opcode_out(uint16_t& pos, Memory& memory, uint16_t a){
+void opcode_out(unsigned short int& pos, Memory& memory, unsigned short int a){
     std::cout << static_cast<char>(a & 0xFF);
     pos += 2;
 }
 
 // 20: in - read a character from the terminal and write its ascii code to <a>; it can be assumed that once input starts, it will continue until a newline is encountered; this means that you can safely read whole lines from the keyboard and trust that they will be fully read
-void opcode_in(uint16_t& pos, Memory& memory, uint16_t a){
+void opcode_in(unsigned short int& pos, Memory& memory, unsigned short int a){
 
     pos += 2;
 }
 
 // 21: noop - no operation
-void opcode_noop(uint16_t& pos, Memory& memory){
+void opcode_noop(unsigned short int& pos, Memory& memory){
     pos += 1;
 }
 
-void opcode_processOpCode(uint16_t& pos, std::vector<uint16_t>& codes, Memory& memory){
-    uint16_t a, b, c;
-    uint16_t opcode = codes[pos];
+void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned short int>& codes, Memory& memory){
+    unsigned short int a = 0, b = 0, c = 0;
+    unsigned short int opcode = codes[pos];
     if (opcode == 2
     || opcode == 3
     || opcode == 6
     || opcode == 17
     || opcode == 19
-    || opcode == 21
-    || opcode == 21){
+    || opcode == 20){
         a = codes[pos + 1];
     }
     if (opcode == 1
@@ -166,6 +170,52 @@ void opcode_processOpCode(uint16_t& pos, std::vector<uint16_t>& codes, Memory& m
         b = codes[pos + 2];
         c = codes[pos + 3];
     }
+
+    std::cout << std::endl << pos << ": " << opcode << " - " << a << " " << b << " " << c << " ";
+
+    // lets check if any value is invalid
+    if (a >= 32776 || b >= 32776 || c >= 32776){
+        std::cout << "INVALID!";
+
+        if (opcode == 0
+        || opcode == 18
+        || opcode == 21){
+            pos += 1;
+        }
+
+        if (opcode == 2
+        || opcode == 3
+        || opcode == 6
+        || opcode == 17
+        || opcode == 19
+        || opcode == 20){
+            pos += 2;
+        }
+        if (opcode == 1
+        || opcode == 7
+        || opcode == 8
+        || opcode == 14
+        || opcode == 15
+        || opcode == 16){
+            pos += 3;
+        }
+        if (opcode == 4
+        || opcode == 5
+        || opcode == 9
+        || opcode == 10
+        || opcode == 11
+        || opcode == 12
+        || opcode == 13){
+            pos += 4;
+        }
+
+        return;
+    }
+
+    // now lets check if a value is a register
+    a = memory.returnValue(a);
+    b = memory.returnValue(b);
+    c = memory.returnValue(c);
 
     switch (opcode){
         case 0:
