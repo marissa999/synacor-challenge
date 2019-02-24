@@ -40,13 +40,19 @@ std::vector<unsigned short int> initCodes(){
 }
 
 int main (const int argc, const char *argv[]){
+
+    std::cout << "Starting emulator..." << std::endl;
+    std::cout << "Reading binary..." << std::endl;
+
     // init memory
     Memory memory;
     unsigned short int pos = 0;
 
     // read opcodes and operands
     const std::vector<unsigned short int> codes = initCodes();
+    std::cout << "Binary fully loaded..." << std::endl;
 
+    std::cout << "Starting emulator..." << std::endl;
     // exectue while opcode isnt 0
     while(codes[pos] != 0){
         opcode_processOpCode(pos, codes, memory);

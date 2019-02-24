@@ -9,14 +9,13 @@
 
 class Memory{
     private:
-        unsigned short int memory[32768];
-        unsigned short int mem_register[8];
+        unsigned short int memory[32768] = {};
+        unsigned short int mem_register[8] = {};
         std::stack<unsigned short int> stack;
     public:
         Memory();
         ~Memory();
-
-        unsigned short int returnValue(unsigned short int a);
+        unsigned short int* returnValue(unsigned short int* a);
         void writeToRegister(unsigned short int register_address, unsigned short int value);
 };
 
