@@ -24,6 +24,6 @@ unsigned short int* Memory::returnValue(unsigned short int* a){
 }
 
 void Memory::writeToRegister(unsigned short int register_address, unsigned short int value){
-    std::cout << " - wrote to " << register_address << " value " << value;
+//    std::cout << " - wrote to " << register_address << " value " << value;
     this->mem_register[register_address] = value;
 }

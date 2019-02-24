@@ -9,14 +9,14 @@
 
 class Memory{
     private:
-        unsigned short int memory[32768] = {};
         unsigned short int mem_register[8] = {};
-        std::stack<unsigned short int> stack;
     public:
         Memory();
         ~Memory();
         unsigned short int* returnValue(unsigned short int* a);
         void writeToRegister(unsigned short int register_address, unsigned short int value);
+        std::stack<unsigned short int> stack;
+        unsigned short int memory[32768] = {};
 };
 
 #endif //SYNACOR_MEMORY_H

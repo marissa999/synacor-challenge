@@ -19,11 +19,21 @@ void opcode_set(unsigned short int& pos, Memory& memory, unsigned short int*a, u
 
 // 2 - push: push <a> onto the stack
 void opcode_push(unsigned short int& pos, Memory& memory, unsigned short int*a){
+    memory.stack.push(*a);
     pos += 2;
 }
 
 // 3 - pop: remove the top element from the stack and write it into <a>; empty stack = error
 void opcode_pop(unsigned short int& pos, Memory& memory, unsigned short int*a){
+    if (memory.stack.empty()){
+        std::cout << "stack is empty" << std::endl;
+        pos += 2;
+        return;
+    }
+
+    *a = memory.stack.top();
+    memory.stack.pop();
+
     pos += 2;
 }
 
@@ -82,38 +92,41 @@ void opcode_and(unsigned short int& pos, Memory& memory, unsigned short int*a, u
 
 // 13: or - stores into <a> the bitwise or of <b> and <c>
 void opcode_or(unsigned short int& pos, Memory& memory, unsigned short int*a, unsigned short int*b, unsigned short int*c){
-    *a = *b ^ *c;
+    *a = *b | *c;
     pos += 4;
 }
 
 // 14: not - stores 15-bit bitwise inverse of <b> in <a>
 void opcode_not(unsigned short int& pos, Memory& memory, unsigned short int*a, unsigned short int*b){
-    *a = ~*b & 0x8FFF;
+    *a = ~*b & 0x7FFF;
     pos += 3;
 }
 
 // 15: rmem - read memory at address <b> and write it to <a>
 void opcode_rmem(unsigned short int& pos, Memory& memory, unsigned short int*a, unsigned short int*b){
-
+//    std::cout << "mem address: " << *b << " value is: " << memory.memory[*b] << " write to: " << *a << std::endl;
+    *a = memory.memory[*b];
     pos += 3;
 }
 
 // 16: wmem - write the value from <b> into memory at address <a>
 void opcode_wmem(unsigned short int& pos, Memory& memory, unsigned short int*a, unsigned short int*b){
+//    std::cout << "write " << *b << " to " << *a << std::endl;
 
+    memory.memory[*a] = *b;
     pos += 3;
 }
 
 // 17: call - write the address of the next instruction to the stack and jump to <a>
 void opcode_call(unsigned short int& pos, Memory& memory, unsigned short int*a){
-
-    pos += 2;
+    memory.stack.push(pos += 2);
+    pos = *a;
 }
 
 // 18: ret - remove the top element from the stack and jump to it; empty stack = halt
 void opcode_ret(unsigned short int& pos, Memory& memory){
-
-    pos += 1;
+    pos = memory.stack.top();
+    memory.stack.pop();
 }
 
 // 19: out - write the character represented by ascii code <a> to the terminal
@@ -124,7 +137,9 @@ void opcode_out(unsigned short int& pos, Memory& memory, unsigned short int*a){
 
 // 20: in - read a character from the terminal and write its ascii code to <a>; it can be assumed that once input starts, it will continue until a newline is encountered; this means that you can safely read whole lines from the keyboard and trust that they will be fully read
 void opcode_in(unsigned short int& pos, Memory& memory, unsigned short int*a){
-
+    char letter;
+    std::cin.get(letter);
+    *a = (int) letter;
     pos += 2;
 }
 
@@ -133,7 +148,7 @@ void opcode_noop(unsigned short int& pos, Memory& memory){
     pos += 1;
 }
 
-void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned short int>& codes, Memory& memory){
+void opcode_processOpCode(unsigned short int& pos, Memory& memory){
 
     unsigned short int *a = new unsigned short int;
     unsigned short int *b = new unsigned short int;
@@ -142,7 +157,7 @@ void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned sh
     *b = 0;
     *c = 0;
 
-    unsigned short int opcode = codes[pos];
+    unsigned short int opcode = memory.memory[pos];
 
     if (opcode == 2
     || opcode == 3
@@ -150,7 +165,7 @@ void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned sh
     || opcode == 17
     || opcode == 19
     || opcode == 20){
-        *a = codes[pos + 1];
+        *a = memory.memory[pos + 1];
     }
 
     if (opcode == 1
@@ -159,8 +174,8 @@ void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned sh
     || opcode == 14
     || opcode == 15
     || opcode == 16){
-        *a = codes[pos + 1];
-        *b = codes[pos + 2];
+        *a = memory.memory[pos + 1];
+        *b = memory.memory[pos + 2];
     }
     
     if (opcode == 4
@@ -170,9 +185,9 @@ void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned sh
     || opcode == 11
     || opcode == 12
     || opcode == 13){
-        *a = codes[pos + 1];
-        *b = codes[pos + 2];
-        *c = codes[pos + 3];
+        *a = memory.memory[pos + 1];
+        *b = memory.memory[pos + 2];
+        *c = memory.memory[pos + 3];
     }
 
     // lets check if any value is invalid
@@ -219,7 +234,7 @@ void opcode_processOpCode(unsigned short int& pos, const std::vector<unsigned sh
     b = memory.returnValue(b);
     c = memory.returnValue(c);
 
-//    std::cout << std::endl << pos << ": " << opcode << " - " << (*a) << " " << (*b) << " " << (*c) << " ";
+//    std::cout << std::endl << pos << ": " << opcode << " - " << (*a) << " " << (*b) << " " << (*c) << std::endl;
 
     switch (opcode){
         case 0:

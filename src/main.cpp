@@ -7,7 +7,7 @@
 #include <fstream>
 #include <vector>
 
-std::vector<unsigned short int> initCodes(){
+std::vector<unsigned short int> initCodes(Memory& memory){
     std::vector<unsigned short int> codes;
     // init buffer
     char* buffer;
@@ -33,29 +33,23 @@ std::vector<unsigned short int> initCodes(){
         exit(0);
     }
     // make 8 bits to 16 bit
-    for(int i = 0; i < length; i += 2){
-        codes.push_back((static_cast<unsigned short int>(buffer[i] & 0xff)) | (static_cast<unsigned short int>(buffer[i + 1] << 8)));
-    }
+    for(int i = 0; i < length; i += 2)
+        memory.memory[(i >> 1)] = (static_cast<unsigned short int>(buffer[i] & 0xff)) | (static_cast<unsigned short int>(buffer[i + 1] << 8));
     return codes;
 }
 
 int main (const int argc, const char *argv[]){
-
-    std::cout << "Starting emulator..." << std::endl;
-    std::cout << "Reading binary..." << std::endl;
-
     // init memory
     Memory memory;
+
     unsigned short int pos = 0;
 
     // read opcodes and operands
-    const std::vector<unsigned short int> codes = initCodes();
-    std::cout << "Binary fully loaded..." << std::endl;
-
-    std::cout << "Starting emulator..." << std::endl;
+    initCodes(memory);
     // exectue while opcode isnt 0
-    while(codes[pos] != 0){
-        opcode_processOpCode(pos, codes, memory);
+
+    while(memory.memory[pos] != 0){
+        opcode_processOpCode(pos, memory);
     }
 
     return 0;
