@@ -29,7 +29,7 @@ std::vector<unsigned short int> initCodes(Memory& memory){
         // close ifs
         ifs.close();
     } else {
-        std::cout << "Couldn't open file. Stop!" << std::endl;
+        std::cout << "Could not open the binary 'challenge.bin'. Stop!" << std::endl;
         exit(0);
     }
     // make 8 bits to 16 bit
