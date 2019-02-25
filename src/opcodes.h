@@ -8,6 +8,6 @@
 #include "memory.h"
 #include <vector>
 
-void opcode_processOpCode(unsigned short int& pos, Memory& memory);
+void processOpCode(unsigned short int& pos, Memory& memory);
 
 #endif //SYNACOR_OPCODES_H

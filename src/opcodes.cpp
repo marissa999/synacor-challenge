@@ -148,7 +148,7 @@ void opcode_noop(unsigned short int& pos, Memory& memory){
     pos += 1;
 }
 
-void opcode_processOpCode(unsigned short int& pos, Memory& memory){
+void processOpCode(unsigned short int& pos, Memory& memory){
 
     unsigned short int *a = new unsigned short int;
     unsigned short int *b = new unsigned short int;
@@ -307,4 +307,7 @@ void opcode_processOpCode(unsigned short int& pos, Memory& memory){
             break;
     }
 
+    delete a;
+    delete b;
+    delete c;
 }

@@ -49,7 +49,7 @@ int main (const int argc, const char *argv[]){
     // exectue while opcode isnt 0
 
     while(memory.memory[pos] != 0){
-        opcode_processOpCode(pos, memory);
+        processOpCode(pos, memory);
     }
 
     return 0;
